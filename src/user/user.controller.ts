@@ -8,6 +8,7 @@ import {
   UseGuards,
   Patch,
   Body,
+  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
@@ -23,6 +24,14 @@ import { Roles } from '../auth/decorators/role.decorators';
 @ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('me')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "O'z profilimni olish" })
+  async getMe(@Req() req) {
+    return this.userService.findOne(req.user.id);
+  }
 
   @Get()
   @ApiOperation({ summary: 'Barcha userlar (filter + pagination)' })
